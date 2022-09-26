@@ -12,7 +12,7 @@
     <!-- 숨겨진 경고 박스  -->
     <div class="alert-box" id="alert"> 
         <p id="title"> </p>
-        <button onclick="control_button('alert', 'none')"> 닫기 </button>    
+        <button id ="close"> 닫기 </button>    
     </div>
 
 
@@ -38,12 +38,15 @@
 
     function control_button(id_str, str, text_show)
     {
-        console.log(typeof(id_str), typeof(str)); 
+        //console.log(typeof(id_str), typeof(str)); 
         document.getElementById(id_str).style.display = str;
-        document.getElementById("title").innerHTML=text_show
+        document.getElementById("title").innerHTML=text_show;
     }
 
   
+    document.getElementById("close").addEventListener('click', 
+    function(){ document.getElementById("alert").style.display='none';}
+    );
 
 
 </script>
