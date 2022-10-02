@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="src/css/openlive3d.css">
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/holistic@0.5/holistic.js" crossorigin="anonymous"></script>
+</head>
+<body>
+
+<!-- layout -->
+<canvas class="vrm" id="canvas"></canvas>
+
+<div class="bgimg" id="bgimg"></div>
+
+<!-- three-vrm dependencies -->
+<script src="https://unpkg.com/three@0.137.4/build/three.js"></script>
+<script src="https://unpkg.com/three@0.137.4/examples/js/loaders/GLTFLoader.js"></script>
+<script src="https://unpkg.com/three@0.137.4/examples/js/controls/OrbitControls.js"></script>
+<script src="lib/js/vrm/three-vrm.min.js"></script>
+
+<!-- local dependencies -->
+<script src="src/js/config/config-manager.js"></script>  <!-- 컨피그 파일 쿠키에 저장 & 로드 -->
+<script src="src/js/media/media-manager.js"></script> <!-- 비디오 초기화 -->
+<script src="src/js/gui/gui-layout.js"></script>    <!-- UI 생성 -->
+<script src="src/js/landmark/facekey.js"></script> <!-- 얼굴 정보 -->
+<script src="src/js/landmark/posekey.js"></script> <!-- 포즈 정보 -->
+<script src="src/js/landmark/handkey.js"></script> <!-- 손 정보 -->
+<script src="src/js/landmark/landmark-manager.js"></script> <!-- 얼굴 특징점 정보 -->
+<script src="src/js/model/model-manager.js"></script>
+<script src="src/js/control/interpolator.js"></script>
+<script src="src/js/control/arm-magic.js"></script>
+<script src="src/js/control/control-manager.js"></script>
+<script>
+
+    // start camera, load resources, link things
+    initialize();
+
+    // kick off the initialization loop!
+    //requestAnimationFrame(initLoop);
+
+</script>
+
+
+</body>
+</html>
