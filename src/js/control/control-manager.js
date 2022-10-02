@@ -36,7 +36,9 @@ function loadVRM(vrmurl)
             };
             resetCameraPos(pos);
             resetVRMMood();
-            createMoodLayout();
+            
+            //createMoodLayout();
+            
             let hips = currentVrm.humanoid.getBoneNode(Tvrmshbn.Hips).position;
             defaultXYZ = [hips.x, hips.y, hips.z];
             console.log("vrm model loaded");
@@ -548,7 +550,7 @@ function checkVRMMood(mood){
 
 // integration check
 async function checkIntegrate(){
-    drawLoading("⟳ Integration Validating...");
+    //drawLoading("⟳ Integration Validating...");
     let image = getCameraFrame();
     let hModel = getHolisticModel();
     await hModel.send({image: getCameraFrame()});
@@ -568,17 +570,15 @@ function checkVRMModel(){
 
 // initialization loop
 function initLoop(){
-    if(window.mobileCheck()){
-        drawMobile();
+
+    //drawLoading("Initializing");
+    if(checkVRMModel() && checkHModel() && checkImage()){
+        console.log("start integration validation");
+        checkIntegrate();
     }else{
-        drawLoading("Initializing");
-        if(checkVRMModel() && checkHModel() && checkImage()){
-            console.log("start integration validation");
-            checkIntegrate();
-        }else{
-            requestAnimationFrame(initLoop);
-        }
+        requestAnimationFrame(initLoop);
     }
+
 }
 
 // validate counter

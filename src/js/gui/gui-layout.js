@@ -4,32 +4,10 @@ let moodbar = document.getElementById("themoodbar");
 let layout = document.getElementById("layout");       //이건 사용 안하는 듯
 let system = document.getElementById("system");
 
-// 시스템 클릭 시 콜백 함수1
-system.onclick = function(){
-    console.log("click SYSTEM_IMG");
-    if(sidebar.style.display == "none"){
-        sidebar.style.display = "block";
-        moodbar.style.display = "none";
-    }else{
-        sidebar.style.display = "none";
-        moodbar.style.display = "block";
-    }
-};
+
 
 // 시스템 메시지
-let systemtext = document.getElementById("systemtext");
-
-// 시스템 클릭 시 콜백 함수2
-system.onmouseover = function(){
-    systemtext.style.color = "#FFFFFFFF";
-};
-
-// 시스템 클릭 시 콜백 함수3
-system.onmouseout = function(){
-    if(sidebar.style.display == "none"){
-        systemtext.style.color = "#FFFFFF00";
-    }
-};
+//let systemtext = document.getElementById("systemtext");
 
 //=================================================================================================
 
@@ -82,38 +60,10 @@ function setCameraCallBack(){
 }
 
 // UI 만들기 메인 함수
-function createLayout(){
+function createLayout()
+{
     setBackGround();
-
     // document link
-    let docbtn = document.getElementById('docbtn');
-    docbtn.href = getCMV("DOC_URL");
-
-    // html canvas for drawing debug view
-    let videoselect = document.getElementById("videoselect");
-    videoselect.onchange = function(){
-        console.log("set camera: ", videoselect.value);
-        setVideoStream(videoselect.value, setCameraCallBack);
-    }
-
-    let dbg = document.getElementById("dbg");
-    dbg.style.width = "100%";
-
-    let dbgimcheck = document.getElementById("dbgimcheck");
-    if(getCMV("DEBUG_IMAGE")){
-        dbgimcheck.setAttribute('checked', "checked");
-    }
-    dbgimcheck.onclick = function myFunction(){
-        setCMV("DEBUG_IMAGE", dbgimcheck.checked);
-    }
-
-    let dbglmcheck = document.getElementById("dbglmcheck");
-    if(getCMV("DEBUG_LANDMARK")){
-        dbglmcheck.setAttribute('checked', "checked");
-    }
-    dbglmcheck.onclick = function myFunction(){
-        setCMV("DEBUG_LANDMARK", dbglmcheck.checked);
-    }
 
     // vrm loading button
     let vrmbtn = document.getElementById("vrmbtn");
@@ -131,183 +81,14 @@ function createLayout(){
         }
     }
 
-    // config modifier
-    let confbox = document.getElementById("confbox");
-    let confmodifiers = getConfigModifiers();
 
-
-    Object.keys(confmodifiers).forEach(function(key){
-
-        confmodifier = confmodifiers[key];
-        let confkey = document.createElement('div');
-        confkey.className = "confkey";
-        confkey.id = "confkey_" + key;
-        confkey.innerHTML = "ᐅ " + key;
-        confkey.onclick = function(){
-            Object.keys(confmodifiers).forEach(function(otherkey){
-                let tmpkey = document.getElementById("confkey_" + otherkey);
-                let tmpgroup = document.getElementById("confgroup_" + otherkey);
-                if(otherkey == key && tmpgroup.className == "w3-margin w3-hide"){
-                    tmpkey.innerHTML = "ᐁ " + otherkey;
-                    tmpgroup.className = "w3-margin";
-                }else{
-                    tmpkey.innerHTML = "ᐅ " + otherkey;
-                    tmpgroup.className = "w3-margin w3-hide";
-                }
-            });
-        }
-
-        //UI 값을 자동으로 읽어들이는 듯
-        confbox.appendChild(confkey);
-        let confgroup = document.createElement('div');
-        confgroup.className = "w3-margin w3-hide";
-        confgroup.id = "confgroup_" + key;
-        confbox.appendChild(confgroup);
-
-
-        for(let i = 0; i < confmodifier.length; i ++){
-            let configitem = confmodifier[i];
-            let info = document.createElement('text');
-            info.className = "w3-tooltip";
-            info.style.color = "#fff9";
-            info.innerHTML = " [ℹ] ";
-            confgroup.appendChild(info);
-            let span = document.createElement('span');
-            span.className = "w3-text w3-tag";
-            span.innerHTML = configitem['describe'];
-            info.appendChild(span);
-            let name = document.createElement('text');
-            name.className = "w3-tooltip";
-            name.style.color = "#fff";
-            name.innerHTML = configitem['title'];
-            confgroup.appendChild(name);
-            confgroup.appendChild(document.createElement("br"));
-            let item = document.createElement('input');
-            item.id = configitem['key'] + "_box";
-            confgroup.appendChild(item);
-            if(getBinaryCM().includes(configitem['key'])){
-                item.setAttribute("type", "checkbox");
-                item.checked = getCMV(configitem['key']);
-                item.onclick = function myFunction(){
-                    setCMV(configitem['key'], item.checked);
-                };
-            }else if(configitem['key'] == "BG_UPLOAD"){
-                item.setAttribute("type", "file");
-                item.setAttribute("accept", "image/*");
-                item.onchange = function myFunction(){
-                    let file = item.files[0];
-                    if(file){
-                        let reader = new FileReader();
-                        reader.onloadend = function(){
-                            setCMV(configitem['key'], "url(" + reader.result + ")");
-                            setBackGround();
-                        }
-                        reader.readAsDataURL(file);
-                    }else{
-                        setCMV("BG_UPLOAD", "");
-                        setBackGround();
-                    }
-                };
-                let cancelitem = document.createElement("input");
-                cancelitem.setAttribute("type", "button");
-                cancelitem.setAttribute("value", "Remove Image");
-                cancelitem.onclick = function(){
-                    item.value = "";
-                    setCMV("BG_UPLOAD", "");
-                    setBackGround();
-                }
-                confgroup.appendChild(cancelitem);
-            }else if(configitem['key'] == "BG_COLOR"){
-                item.setAttribute("type", "color");
-                item.setAttribute("value", getCMV("BG_COLOR"));
-                item.onchange = function myFunction(){
-                    setCMV("BG_UPLOAD", "");
-                    setCMV("BG_COLOR", item.value);
-                    setBackGround();
-                };
-            }else{
-                item.setAttribute("type", "range");
-                item.setAttribute("min", 0);
-                item.setAttribute("max", 1000);
-                let setrange = configitem['range'][1] - configitem['range'][0];
-                let setvalue = (getCMV(configitem['key']) - configitem['range'][0]) * 1000 / setrange;
-                item.setAttribute("value", setvalue);
-                item.onchange = function(){
-                    let newvalue = item.value / 1000 * setrange + configitem['range'][0];
-                    itemval.value = newvalue;
-                    itemval.onchange();
-                }
-                let itemval = document.createElement("input");
-                itemval.style.textAlign = "right";
-                itemval.style.width = "100px";
-                itemval.value = getCMV(configitem['key']);
-                itemval.onchange = function(){
-                    console.log(configitem['key'], itemval.value);
-                    if(itemval.value < configitem['range'][0]){
-                        itemval.value = configitem['range'][0];
-                    }else if(itemval.value < configitem['range'][1]){
-                    }else{
-                        itemval.value = configitem['range'][1];
-                    }
-                    let newvalue = (itemval.value - configitem['range'][0]) * 1000 / setrange;
-                    item.setAttribute("value", newvalue);
-                    setCMV(configitem['key'], itemval.value);
-                };
-                confgroup.appendChild(itemval);
-            }
-            confgroup.appendChild(document.createElement("br"));
-        }
-    });
-
-    // log modifier
-    let logbox = document.getElementById("logbox");
-    let logitems = getLogItems();
-    for(let key of logitems){
-        let logkey = document.createElement('div');
-        logkey.className = "confkey";
-        logkey.id = "logkey_" + key;
-        logkey.innerHTML = "ᐅ " + key;
-        let loggroup = document.createElement('div');
-        loggroup.className = "w3-margin w3-hide";
-        loggroup.id = "logbox_" + key;
-        loggroup.style.color = "white";
-        logkey.onclick = function(){
-            if(loggroup.className == "w3-margin w3-hide"){
-                logkey.innerHTML = "ᐁ " + key;
-                loggroup.className = "w3-margin";
-            }else{
-                logkey.innerHTML = "ᐅ " + key;
-                loggroup.className = "w3-margin w3-hide";
-            }
-        }
-        logbox.appendChild(logkey);
-        logbox.appendChild(loggroup);
-    }
-
-    // about the team
-    let about = document.getElementById("about");
-    about.style.color = "white";
-    let alinks = [
-        [getCMV("ORG_URL"), "OpenLive3D - " + getCMV("VERSION")],
-        [getCMV("REPO_URL"), "Dev Date - " + getCMV("DEV_DATE")]
-    ];
-    for(let i = 0; i < alinks.length; i ++){
-        let alink = document.createElement("a");
-        alink.href = alinks[i][0];
-        alink.innerHTML = alinks[i][1];
-        alink.setAttribute("target", "_blank");
-        alink.setAttribute("rel", "noopener noreferrer");
-        about.appendChild(alink);
-        about.appendChild(document.createElement("br"));
-    }
-
-    console.log("gui layout initialized");
 }
 
 // 카메라 선택
 function createCameraLayout(){
     let videoselect = document.getElementById("videoselect");
     videoselect.innerHTML = "";
+    
     listCameras(carr => {
         for(let cobj of carr){
             let option = document.createElement('option');
@@ -463,47 +244,6 @@ function hideLoadbox(){
 function drawMobile(){
     let loadbox = document.getElementById('loadinfo');
     loadbox.innerHTML = "MOBILE NOT SUPPORTED!!";
-}
-
-//로딩 바 처리
-function drawLoading(loadStage){
-    let loadbox = document.getElementById('loadinfo');
-    loadbox.innerHTML = "";
-    if(checkVRMModel() && checkHModel() && checkImage()){
-        let checkintegrate = document.createElement('p');
-        loadbox.appendChild(checkintegrate);
-        checkintegrate.innerHTML = loadStage;
-        let tmp1 = document.createElement('p');
-        loadbox.appendChild(tmp1);
-        tmp1.innerHTML = ".";
-        tmp1.style.color = "#0000";
-        let tmp2 = document.createElement('p');
-        loadbox.appendChild(tmp2);
-        tmp2.innerHTML = ".";
-        tmp2.style.color = "#0000";
-    }else{
-        let checkvrm = document.createElement('p');
-        loadbox.appendChild(checkvrm);
-        if(checkVRMModel()){
-            checkvrm.innerHTML = "✅ VRM-Model Loading...";
-        }else{
-            checkvrm.innerHTML = "⟳ VRM-Model Loading...";
-        }
-        let checklm = document.createElement('p');
-        loadbox.appendChild(checklm);
-        if(checkHModel()){
-            checklm.innerHTML = "✅ FaceLandMark-Model Loading...";
-        }else{
-            checklm.innerHTML = "⟳ FaceLandMark-Model Loading...";
-        }
-        let checkcamera = document.createElement('p');
-        loadbox.appendChild(checkcamera);
-        if(checkImage()){
-            checkcamera.innerHTML = "✅ Camera Loading...";
-        }else{
-            checkcamera.innerHTML = "⟳ Camera Loading...";
-        }
-    }
 }
 
 function isVisible(target){
